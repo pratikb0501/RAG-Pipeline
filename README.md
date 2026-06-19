@@ -48,11 +48,19 @@ The three stages:
 
 | Stage | When it runs | What it does |
 |-------|-------------|--------------|
-| **1. Ingestion** | Once (or when docs change) | Load → chunk → embed → store in ChromaDB |
+| **1. Ingestion** | Once, on first run | Load → chunk → embed → store in ChromaDB |
 | **2. Retrieval** | Every question | Embed the question, find the top-k most similar chunks |
 | **3. Generation** | Every question | Inject chunks into the prompt, generate a grounded answer |
 
 Ingestion is **pre-computed once** so vectors persist on disk; retrieval and generation run per query.
+
+> **Note on document updates:** In this version, ingestion runs only when the
+> vector store is empty (`collection.count() == 0`). It does **not** auto-detect
+> edited documents — if you change a file, delete the `chroma_db/` folder (or
+> clear the collection) and re-run to re-ingest. Production systems handle this
+> with change detection (file hashing), scheduled re-indexing, or webhooks, and
+> use `upsert` to update only the chunks that changed. That's a planned
+> enhancement.
 
 ---
 
