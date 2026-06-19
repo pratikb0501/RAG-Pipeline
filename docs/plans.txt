@@ -1,0 +1,3 @@
+Pricing and Plans
+
+We offer three plans. The Free plan includes basic features for individuals with up to 100 monthly requests. The Pro plan costs 29 dollars per month and includes 10000 monthly requests, priority support, and advanced analytics. The Enterprise plan offers custom pricing, unlimited requests, a dedicated account manager, and a service level agreement. You can upgrade or downgrade your plan at any time from the billing settings.

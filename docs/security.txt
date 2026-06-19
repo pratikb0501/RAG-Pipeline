@@ -1,0 +1,3 @@
+Security and Privacy
+
+All data is encrypted in transit using TLS and at rest using AES-256. We are SOC 2 Type II compliant. We never sell your personal data to third parties. Two-factor authentication is available and strongly recommended for all accounts. You can enable it under Settings then Security. We retain account data for 90 days after cancellation, after which it is permanently deleted.

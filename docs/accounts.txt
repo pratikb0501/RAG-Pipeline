@@ -1,0 +1,3 @@
+Account Management
+
+To reset your password, click "Forgot Password" on the login page and follow the email instructions. You can update your billing details under Settings. To cancel your subscription, go to Settings then Billing then Cancel Plan. Cancellation takes effect at the end of the current billing cycle. If you are locked out of your account after too many failed login attempts, wait 30 minutes or contact support@acme.com.
