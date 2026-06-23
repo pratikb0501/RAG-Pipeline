@@ -1,6 +1,6 @@
 # RAG from Scratch
 
-A complete Retrieval-Augmented Generation (RAG) pipeline built from first principles — **no LangChain, no LlamaIndex, no frameworks**. Every piece (embeddings, chunking, hybrid search, cross-encoder reranking, metadata filtering, and grounded generation) is implemented and understood directly.
+A complete Retrieval-Augmented Generation (RAG) pipeline built from first principles — **no LangChain, no LlamaIndex, no frameworks**. Every piece (embeddings, chunking, hybrid search, cross-encoder reranking, metadata filtering, citations, and grounded generation) is implemented and understood directly.
 
 Runs **fully local and free** using Ollama for models and ChromaDB for vector storage.
 
@@ -13,8 +13,15 @@ Ask a natural-language question about a set of documents and get back a concise,
 ```
 Q: How do I cancel my subscription?
 A: To cancel your subscription, go to Settings then Billing then Cancel Plan.
-   Cancellation takes effect at the end of the current billing cycle.
-   [Source: accounts.txt]
+   Cancellation takes effect at the end of the current billing cycle. [1]
+
+--- Sources ---
+[1] (accounts.txt) confidence: medium
+    "To cancel your subscription, go to Settings then Billing then Cancel Plan. Cance..."
+[2] (security.txt) confidence: low
+    "You can enable it under Settings then Security. We retain account data for 90 da..."
+[3] (plans.txt) confidence: low
+    "You can upgrade or downgrade your plan at any time from the billing settings...."
 ```
 
 Even works when your wording doesn't match the document — asking "how do I **terminate** my subscription?" still returns the right answer about **cancelling**, because the cross-encoder understands they mean the same thing.
@@ -42,9 +49,9 @@ flowchart TD
         I --> J[Cross-encoder rerank<br/>ms-marco-MiniLM]
         E -.-> J
         J --> K[Top 3 precise results]
-        K --> L[Build context<br/>with source tags]
-        L --> M[LLM generates answer<br/>qwen2.5:7b<br/>'answer ONLY from context']
-        M --> N[Grounded, cited answer]
+        K --> L[Build context<br/>with numbered source tags]
+        L --> M[LLM generates answer<br/>qwen2.5:7b<br/>'answer ONLY from context, cite by number']
+        M --> N[Answer with citations<br/>+ source passages<br/>+ confidence levels]
     end
 
     style INGEST fill:#e8f4fd,stroke:#2e75b6
@@ -58,7 +65,7 @@ The three stages:
 |-------|-------------|--------------|
 | **1. Ingestion** | Once, on first run | Load → chunk → embed → store in ChromaDB |
 | **2. Retrieval** | Every question | Hybrid search (vector + BM25) → cross-encoder reranking → top 3 |
-| **3. Generation** | Every question | Inject chunks into prompt → generate grounded answer with citations |
+| **3. Generation** | Every question | Inject chunks into prompt → generate answer with numbered citations + confidence |
 
 Ingestion is **pre-computed once** so vectors persist on disk; retrieval and generation run per query.
 
@@ -180,6 +187,7 @@ Each file has one responsibility:
 - **Hybrid search** — combines vector similarity (catches paraphrases) with BM25 keyword matching (catches exact terms), normalized and merged with alpha weighting.
 - **Reranking** — a cross-encoder reads each query-document pair together, catching subtle relevance that separate encoding misses.
 - **Grounding** — the LLM is instructed to answer only from the retrieved context and to cite its source, which prevents hallucination.
+- **Citations** — answers include numbered references linking to the exact source passage and a confidence level (high/medium/low), so users can verify every claim.
 - **Metadata filtering** — chunks are tagged with categories, allowing scoped retrieval that excludes irrelevant document types.
 
 ---
@@ -192,6 +200,7 @@ Each file has one responsibility:
 - How hybrid search (vector + BM25) covers both semantic and exact-match blind spots
 - The bi-encoder vs cross-encoder distinction and why two-stage retrieval works
 - How grounding instructions keep an LLM faithful to source documents
+- How numbered citations with source passages and confidence levels build user trust
 - Structuring an AI project into clean, single-responsibility modules
 
 Built as part of a self-directed AI engineering track — deliberately without frameworks, to understand the moving parts before abstracting them away.
